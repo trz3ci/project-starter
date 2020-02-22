@@ -12,10 +12,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 internal class ConfigurationPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
-        if (rootConfig.quality.enabled) {
+        if (rootConfig.quality.enabled.get()) {
             pluginManager.apply("com.starter.quality")
         }
-        if (rootConfig.versioning.enabled) {
+        if (rootConfig.versioning.enabled.get()) {
             if (!rootProject.pluginManager.hasPlugin("com.starter.versioning")) {
                 logger.debug("Apply com.starter.versioning to $rootProject")
                 rootProject.pluginManager.apply(VersioningPlugin::class.java)
@@ -28,7 +28,7 @@ internal class ConfigurationPlugin : Plugin<Project> {
 
         val javaVersion = rootConfig.javaVersion
         tasks.withType(KotlinCompile::class.java).all {
-            it.kotlinOptions.jvmTarget = javaVersion.toString()
+            it.kotlinOptions.jvmTarget = javaVersion.get().toString()
         }
     }
 }

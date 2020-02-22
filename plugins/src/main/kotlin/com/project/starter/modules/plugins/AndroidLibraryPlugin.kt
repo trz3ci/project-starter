@@ -6,7 +6,6 @@ import com.project.starter.modules.extensions.AndroidLibraryConfigExtension
 import com.project.starter.modules.internal.configureAndroidLint
 import com.project.starter.modules.internal.configureAndroidPlugin
 import com.project.starter.modules.internal.configureAndroidProject
-import com.project.starter.modules.internal.withExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -18,21 +17,19 @@ class AndroidLibraryPlugin : Plugin<Project> {
         pluginManager.apply(ConfigurationPlugin::class.java)
 
         val rootConfig = this.rootConfig
-        extensions.create("projectConfig", AndroidLibraryConfigExtension::class.java)
+        val projectConfig = extensions.create("projectConfig", AndroidLibraryConfigExtension::class.java)
 
         val android = extensions.getByType<LibraryExtension>(LibraryExtension::class.java).apply {
             configureAndroidPlugin(rootConfig)
             configureAndroidLint(lintOptions)
         }
 
-        withExtension<AndroidLibraryConfigExtension> { projectConfig ->
-            val variants = android.libraryVariants
+        val variants = android.libraryVariants
 
-            configureAndroidProject(variants, projectConfig)
+        configureAndroidProject(variants, projectConfig)
 
-            variants.all { variant ->
-                variant.generateBuildConfigProvider.configure { it.enabled = projectConfig.generateBuildConfig }
-            }
+        variants.all { variant ->
+            variant.generateBuildConfigProvider.configure { it.enabled = projectConfig.generateBuildConfig.get() }
         }
     }
 }

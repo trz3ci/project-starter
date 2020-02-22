@@ -48,19 +48,19 @@ internal class CommonSettingsPluginTest : WithGradleProjectTest() {
             }
             
             commonConfig {
-                javaVersion = JavaVersion.VERSION_1_8
-                javaFilesAllowed = false
+                javaVersion JavaVersion.VERSION_1_8
+                javaFilesAllowed false
                 androidPlugin {
-                    compileSdkVersion = 29
-                    minSdkVersion = 23
-                    targetSdkVersion = 29
+                    compileSdkVersion 29
+                    minSdkVersion 23
+                    targetSdkVersion 29
                 }
                 qualityPlugin {
-                    enabled = true
-                    formatOnCompile = true
+                    enabled true
+                    formatOnCompile true
                 }
                 versioningPlugin {
-                    enabled = true
+                    enabled true
                 }
             }
             """.trimIndent()

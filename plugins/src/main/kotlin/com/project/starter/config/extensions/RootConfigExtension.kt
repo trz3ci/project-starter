@@ -1,18 +1,20 @@
 package com.project.starter.config.extensions
 
+import com.project.starter.property
 import groovy.lang.Closure
 import org.gradle.api.Action
 import org.gradle.api.JavaVersion
+import org.gradle.api.model.ObjectFactory
 import org.gradle.util.ConfigureUtil
 
-open class RootConfigExtension(
-    var javaVersion: JavaVersion = JavaVersion.VERSION_1_8,
-    var javaFilesAllowed: Boolean = true
-) {
+open class RootConfigExtension(objects: ObjectFactory) {
 
-    val quality = QualityPluginConfig()
-    val android = AndroidPluginConfig()
-    val versioning = VersioningPluginConfig()
+    var javaVersion = objects.property(JavaVersion.VERSION_1_8)
+    var javaFilesAllowed = objects.property(default = true)
+
+    val quality = QualityPluginConfig(objects)
+    val android = AndroidPluginConfig(objects)
+    val versioning = VersioningPluginConfig(objects)
 
     fun qualityPlugin(c: Closure<QualityPluginConfig>) =
         ConfigureUtil.configure(c, quality)
@@ -31,53 +33,21 @@ open class RootConfigExtension(
 
     fun versioningPlugin(action: Action<VersioningPluginConfig>) =
         action.execute(versioning)
-
-    fun javaVersion(value: JavaVersion) {
-        javaVersion = value
-    }
-
-    fun javaFilesAllowed(value: Boolean) {
-        javaFilesAllowed = value
-    }
 }
 
 open class QualityPluginConfig(
-    var formatOnCompile: Boolean = false,
-    var enabled: Boolean = true
+    objects: ObjectFactory
 ) {
-    fun formatOnCompile(value: Boolean) {
-        formatOnCompile = value
-    }
-
-    fun enabled(value: Boolean) {
-        enabled = value
-    }
+    var formatOnCompile = objects.property(default = false)
+    var enabled= objects.property(default = true)
 }
 
-open class AndroidPluginConfig(
-    var compileSdkVersion: Int = 29,
-    var minSdkVersion: Int = 23,
-    var targetSdkVersion: Int? = null
-) {
-
-    fun compileSdkVersion(value: Int) {
-        compileSdkVersion = value
-    }
-
-    fun minSdkVersion(value: Int) {
-        minSdkVersion = value
-    }
-
-    fun targetSdkVersion(value: Int) {
-        targetSdkVersion = value
-    }
+open class AndroidPluginConfig(objects: ObjectFactory) {
+    var compileSdkVersion = objects.property(default = 29)
+    var minSdkVersion = objects.property(default = 23)
+    var targetSdkVersion = objects.property<Int?>(default = null)
 }
 
-open class VersioningPluginConfig(
-    var enabled: Boolean = true
-) {
-
-    fun enabled(value: Boolean) {
-        enabled = value
-    }
+open class VersioningPluginConfig(objects: ObjectFactory) {
+    var enabled = objects.property(default = true)
 }

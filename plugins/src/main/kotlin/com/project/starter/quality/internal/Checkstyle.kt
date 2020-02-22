@@ -4,10 +4,10 @@ import com.android.build.gradle.AndroidConfig
 import com.android.build.gradle.api.AndroidSourceSet
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.project.starter.config.extensions.RootConfigExtension
+import com.project.starter.configure
 import com.project.starter.modules.extensions.AndroidApplicationConfigExtension
 import com.project.starter.modules.extensions.AndroidLibraryConfigExtension
 import com.project.starter.modules.extensions.KotlinLibraryConfigExtension
-import com.project.starter.modules.internal.withExtension
 import com.project.starter.quality.tasks.GenerateCheckstyleBaselineTask.Companion.addGenerateCheckstyleBaselineTask
 import com.project.starter.quality.tasks.ProjectCodeStyleTask
 import org.gradle.api.Project
@@ -20,7 +20,9 @@ private val pluginsWithConfgiuration = listOf(
         plugin = "kotlin",
         starterPlugin = "com.starter.library.kotlin",
         checkIfJavaAllowed = { callback ->
-            withExtension<KotlinLibraryConfigExtension> { callback(it.javaFilesAllowed) }
+            extensions.configure<KotlinLibraryConfigExtension> {
+                callback(javaFilesAllowed.orNull)
+            }
         },
         configuration = Project::configureKotlinCheckstyle
     ),
@@ -28,7 +30,9 @@ private val pluginsWithConfgiuration = listOf(
         plugin = "com.android.library",
         starterPlugin = "com.starter.library.android",
         checkIfJavaAllowed = { callback ->
-            withExtension<AndroidLibraryConfigExtension> { callback(it.javaFilesAllowed) }
+            extensions.configure<AndroidLibraryConfigExtension> {
+                callback(javaFilesAllowed.orNull)
+            }
         },
         configuration = Project::configureAndroidCheckstyle
     ),
@@ -36,7 +40,9 @@ private val pluginsWithConfgiuration = listOf(
         plugin = "com.android.application",
         starterPlugin = "com.starter.application.android",
         checkIfJavaAllowed = { callback ->
-            withExtension<AndroidApplicationConfigExtension> { callback(it.javaFilesAllowed) }
+            extensions.configure<AndroidApplicationConfigExtension> {
+                callback(javaFilesAllowed.orNull)
+            }
         },
         configuration = Project::configureAndroidCheckstyle
     )
@@ -54,12 +60,12 @@ internal fun Project.configureCheckstyle(rootConfig: RootConfigExtension) {
         pluginManager.withPlugin(plugin) {
             if (pluginManager.hasPlugin(starterPlugin)) {
                 checkIfJavaAllowed { javaFilesAllowed ->
-                    if (javaFilesAllowed ?: rootConfig.javaFilesAllowed) {
+                    if (javaFilesAllowed ?: rootConfig.javaFilesAllowed.get()) {
                         configuration()
                     }
                 }
             } else {
-                if (rootConfig.javaFilesAllowed) {
+                if (rootConfig.javaFilesAllowed.get()) {
                     configuration()
                 }
             }

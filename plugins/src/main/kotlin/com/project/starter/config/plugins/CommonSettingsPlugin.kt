@@ -17,4 +17,4 @@ class CommonSettingsPlugin : Plugin<Project> {
 
 val Project.rootConfig: RootConfigExtension
     get() = rootProject.extensions.findByType(RootConfigExtension::class.java)
-        ?: RootConfigExtension()
+        ?: RootConfigExtension(objects)

@@ -5,7 +5,6 @@ import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.project.starter.config.plugins.rootConfig
 import com.project.starter.modules.extensions.KotlinLibraryConfigExtension
 import com.project.starter.modules.internal.configureAndroidLint
-import com.project.starter.modules.internal.withExtension
 import com.project.starter.modules.tasks.ForbidJavaFilesTask.Companion.addForbidJavaFilesTask
 import com.project.starter.modules.tasks.ProjectCoverageTask.Companion.addProjectCoverageTask
 import com.project.starter.modules.tasks.ProjectLintTask.Companion.addProjectLintTask
@@ -20,7 +19,7 @@ class KotlinLibraryPlugin : Plugin<Project> {
         pluginManager.apply("kotlin")
         pluginManager.apply(ConfigurationPlugin::class.java)
 
-        extensions.create("projectConfig", KotlinLibraryConfigExtension::class.java)
+        val projectConfig = extensions.create("projectConfig", KotlinLibraryConfigExtension::class.java)
 
         addProjectTestTask {
             it.dependsOn("test")
@@ -37,11 +36,10 @@ class KotlinLibraryPlugin : Plugin<Project> {
 
             configureAndroidLint(extensions.getByType(LintOptions::class.java))
         }
-        withExtension<KotlinLibraryConfigExtension> { config ->
-            val javaFilesAllowed = config.javaFilesAllowed ?: rootConfig.javaFilesAllowed
-            if (!javaFilesAllowed) {
-                tasks.named("compileKotlin").dependsOn(addForbidJavaFilesTask())
-            }
+
+        val javaFilesAllowed = projectConfig.javaFilesAllowed.orNull ?: rootConfig.javaFilesAllowed.get()
+        if (!javaFilesAllowed) {
+            tasks.named("compileKotlin").dependsOn(addForbidJavaFilesTask())
         }
     }
 }

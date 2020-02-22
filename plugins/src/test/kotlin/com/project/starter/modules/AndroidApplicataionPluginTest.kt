@@ -167,9 +167,9 @@ internal class AndroidApplicataionPluginTest : WithGradleProjectTest() {
         val config =
             """
             projectConfig {
-                javaFilesAllowed = false
-                defaultVariants = ["demoDebug", "fullRelease"]
-                coverageExclusions = ["**/view/**"]
+                javaFilesAllowed false
+                defaultVariants ["demoDebug", "fullRelease"]
+                coverageExclusions ["**/view/**"]
             }
             
             """.trimIndent()
@@ -195,7 +195,7 @@ internal class AndroidApplicataionPluginTest : WithGradleProjectTest() {
         val config =
             """
             projectConfig {
-                javaFilesAllowed = false
+                javaFilesAllowed false
             }
             
             """.trimIndent()
@@ -228,7 +228,7 @@ internal class AndroidApplicataionPluginTest : WithGradleProjectTest() {
             
             commonConfig {
                 qualityPlugin {
-                    enabled = false
+                    enabled false
                 }
             }
             """.trimIndent()

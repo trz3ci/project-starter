@@ -19,7 +19,7 @@ class QualityPlugin : Plugin<Project> {
         configureCheckstyle(rootConfig)
 
         val config = rootConfig.quality
-        if (config.formatOnCompile) {
+        if (config.formatOnCompile.get()) {
             applyFormatOnRecompile()
         }
     }
