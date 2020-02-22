@@ -18,7 +18,7 @@ class VersioningPlugin : Plugin<Project> {
         if (this != rootProject) throw GradleException("Versioning plugin can be applied to the root project only")
         pluginManager.apply(ReleasePlugin::class.java)
 
-        val scmConfig = extensions.getByType(VersionConfig::class.java).apply {
+        extensions.getByType(VersionConfig::class.java).apply {
             tag.apply {
                 versionSeparator = "/"
             }
@@ -52,24 +52,26 @@ class VersioningPlugin : Plugin<Project> {
             }
         }
 
-        allprojects { project ->
-            project.version = scmConfig.version
+        withExtension<VersionConfig> { scmConfig ->
+            allprojects { project ->
+                project.version = scmConfig.version
 
-            val configureVersion: BaseExtension.(String) -> Unit = { version ->
-                val minor = version.split(".")[0].toInt()
-                val major = version.split(".")[1].toInt()
-                val patch = version.split(".")[2].toInt()
-                defaultConfig.versionCode = minor * 1_000_000 + major * 1000 + patch
-                defaultConfig.versionName = "$minor.$major.$patch"
-            }
-            project.pluginManager.withPlugin("com.android.library") {
-                project.withExtension<LibraryExtension> {
-                    it.configureVersion(scmConfig.undecoratedVersion)
+                val configureVersion: BaseExtension.(String) -> Unit = { version ->
+                    val minor = version.split(".")[0].toInt()
+                    val major = version.split(".")[1].toInt()
+                    val patch = version.split(".")[2].toInt()
+                    defaultConfig.versionCode = minor * 1_000_000 + major * 1000 + patch
+                    defaultConfig.versionName = "$minor.$major.$patch"
                 }
-            }
-            project.pluginManager.withPlugin("com.android.application") {
-                project.withExtension<AppExtension> {
-                    it.configureVersion(scmConfig.undecoratedVersion)
+                project.pluginManager.withPlugin("com.android.library") {
+                    project.withExtension<LibraryExtension> {
+                        it.configureVersion(scmConfig.undecoratedVersion)
+                    }
+                }
+                project.pluginManager.withPlugin("com.android.application") {
+                    project.withExtension<AppExtension> {
+                        it.configureVersion(scmConfig.undecoratedVersion)
+                    }
                 }
             }
         }
