@@ -68,7 +68,6 @@ internal class MultiplatformLibraryPluginTest : WithGradleProjectTest() {
                             jvm()
                         }
                         
-                        
                         dependencies {
                             "jvmTestImplementation"("junit:junit:4.13.2")
                         }
